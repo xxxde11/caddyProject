@@ -1,0 +1,43 @@
+{
+    debug
+}
+域名如 http://www.123.com {
+    root /var/www/1
+    encode zstd gzip
+    file_server
+       log {
+        output file /root/caddylogs_fangwen/access.log {
+            format json
+            roll_local_time
+            roll_keep 10
+            roll_keep_for 365d
+        }
+    }
+            
+    
+}
+
+域名如 http://www.123.com {
+    root * /var/www/a/a
+    file_server
+     header /static/* Cache-Control "public, max-age=31536000"
+     #处理路径 /api开头的
+     handle_path /api* {
+        reverse_proxy 后端地址 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+}
+
+
+#反向代理
+域名如 http://www.123.com  {
+
+        reverse_proxy localhost:8226
+       #对静态资源设置缓存头，减少重复请求： 
+         header /static/* Cache-Control "public, max-age=31536000"
+      
+}
+
